@@ -1,23 +1,26 @@
-import express from "express"
-import products from './data/products.js';
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+
+import colors from "colors"
+import connectDB from './db.js';
 import dotenv from "dotenv"
+import express from "express"
+import productRoutes from './routes/productRoutes.js';
+
 const app = express()
 
+// Dot Env + Database
 dotenv.config()
+connectDB()
 
-app.get("/", async (req, res) => {
-    res.status(200).json(process.env.NODE_ENV)
-})
+// Middleware
+app.use(express.json())
 
-app.get("/api/products", async (req, res) => {
-    res.status(200).json(products)
-})
+// Routes
+app.use("/api/products", productRoutes)
 
-app.get("/api/products/:id", async (req, res) => {
-    let product = products.find(product => product._id === req.params.id)
-    res.status(200).json(product)
-})
+app.use(notFound)
+app.use(errorHandler)
 
 // Server
 const PORT = process.env.PORT || 8000
-app.listen(PORT, () => console.log(`Server is currently running on port ${PORT}...!`))
+app.listen(PORT, () => console.log(`Server is currently running on port ${PORT}...!`.yellow.bold))
