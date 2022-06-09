@@ -18,8 +18,8 @@ app.use(express.json())
 // Routes
 app.use("/api/products", productRoutes)
 
-app.use(notFound)
 app.use(errorHandler)
+app.use(notFound)
 
 // Server
 const PORT = process.env.PORT || 8000
