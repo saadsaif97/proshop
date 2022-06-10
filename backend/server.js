@@ -5,6 +5,7 @@ import connectDB from './db.js';
 import dotenv from "dotenv"
 import express from "express"
 import productRoutes from './routes/productRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 const app = express()
 
@@ -15,8 +16,10 @@ connectDB()
 // Middleware
 app.use(express.json())
 
+
 // Routes
 app.use("/api/products", productRoutes)
+app.use("/api/users", userRoutes)
 
 app.use(errorHandler)
 app.use(notFound)

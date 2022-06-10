@@ -9,3 +9,7 @@
 
 ### LEARNT
 - express-async-handler
+- auth middleware
+- JWT for authentication
+- mongoose pre-save middleware
+- sync thunk
