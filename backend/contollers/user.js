@@ -67,7 +67,7 @@ export const registerUser = asyncHandler(async (req, res) => {
  * @route       GET /api/users/profile
  * @access      PROTECTED
  */
-export const getUser = asyncHandler(async (req, res) => {
+export const getUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id)
     if (user) {
         return res.json({
@@ -79,5 +79,37 @@ export const getUser = asyncHandler(async (req, res) => {
     } else {
         res.status(404)
         throw new Error('User not found')
+    }
+})
+
+/**
+ * @description update profile
+ * @route       PUT /api/users
+ * @access      Protected
+ */
+export const updateUserProfile = asyncHandler(async (req, res) => {
+    const { name, email, password } = req.body
+
+    const user = await User.findById(req.user._id)
+
+    if (user) {
+        user.name = name || user.name
+        user.email = email || user.email
+        user.password = password || user.password
+    }
+
+    const updatedUser = await user.save()
+
+    if (user) {
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin,
+            token: generateToken(updatedUser._id)
+        })
+    } else {
+        res.status(400)
+        throw new Error('Invalid user data')
     }
 })
