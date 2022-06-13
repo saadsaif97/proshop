@@ -1,53 +1,62 @@
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react'
+import { getUserDetails, updateUserDetails } from '../actions/userActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Loading from '../components/Loading';
 import Message from '../components/Message';
-import { userRegister } from '../actions/userActions';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileScreen = () => {
+    const DEFAULT_MESSAGE = { type: 'danger', text: '' }
 
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
-    const [message, setMessage] = useState('')
+    const [message, setMessage] = useState(DEFAULT_MESSAGE)
     const [password, setPassword] = useState('')
     const [confirmpassword, setConfirmPassword] = useState('')
 
+    const { userInfo } = useSelector(state => state.userLogin)
+    const { error, loading, user } = useSelector(state => state.userDetails)
 
-    const [searchParams] = useSearchParams()
-
-    const { error, loading, userInfo } = useSelector(state => state.userRegister)
-
-    const navigate = useNavigate()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     useEffect(() => {
-        if (userInfo?.name) {
-
+        if (!userInfo) {
+            navigate('/login')
+        } else {
+            if (!user.name) {
+                dispatch(getUserDetails('profile'))
+            } else {
+                setName(user.name)
+                setEmail(user.email)
+            }
         }
-    }, [userInfo])
+    }, [user])
 
-    const handleSubmit = (e) => {
+    const handleUpdate = (e) => {
         e.preventDefault()
 
         if (password !== confirmpassword) {
-            setMessage('Password in not matching')
+            setMessage({ type: 'danger', text: 'Password in not matching' })
         } else {
-            setMessage('')
+            setMessage(DEFAULT_MESSAGE)
             // dispatch login
-            dispatch(userRegister({ name, email, password }))
+            dispatch(updateUserDetails('profile', { name, email, password }))
+            setPassword('')
+            setConfirmPassword('')
+            setMessage({ type: 'success', text: 'Profile Updated Successfully' })
         }
     }
 
     return (
         <Row>
             <Col md={3}>
-                {message && <Message variant='danger'>{message}</Message>}
+                {message.text && <Message variant={message.type}>{message.text}</Message>}
                 {error && <Message variant='danger'>{error}</Message>}
                 <h3>User Profile</h3>
-                <Form onSubmit={(e) => handleSubmit(e)}>
+                <Form onSubmit={(e) => handleUpdate(e)}>
                     <Form.Group>
                         <Form.Label>Name</Form.Label>
                         <Form.Control
@@ -77,7 +86,6 @@ const ProfileScreen = () => {
                             value={password}
                             placeholder='Password'
                             onChange={(e) => setPassword(e.target.value)}
-                            required={true}
                         >
                         </Form.Control>
                     </Form.Group>
@@ -88,12 +96,11 @@ const ProfileScreen = () => {
                             value={confirmpassword}
                             placeholder='Confirm Password'
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            required={true}
                         >
                         </Form.Control>
                     </Form.Group>
                     <Form.Group>
-                        <Button className='mt-3 btn-block' variant="primary" type="submit">
+                        <Button className='mt-3 btn-block' variant="primary" type="submit" disabled={loading}>
                             {loading ? <Loading type='cylon' /> : 'Update'}
                         </Button>
                     </Form.Group>

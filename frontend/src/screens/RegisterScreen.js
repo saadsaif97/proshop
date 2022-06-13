@@ -97,7 +97,7 @@ const RegisterScreen = () => {
                     </Form.Control>
                 </Form.Group>
                 <Form.Group>
-                    <Button className='mt-3 btn-block' variant="primary" type="submit">
+                    <Button className='mt-3 btn-block' variant="primary" type="submit" disabled={loading}>
                         {loading ? <Loading type='cylon' /> : 'Register'}
                     </Button>
                 </Form.Group>
