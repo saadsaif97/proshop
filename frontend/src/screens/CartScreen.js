@@ -33,8 +33,7 @@ const CartScreen = () => {
     }
 
     const proceedToCheckoutHandler = () => {
-        if (!userInfo?.name) navigate('/login?redirect=shipping')
-        console.log('checkout')
+        navigate('/login?redirect=shipping')
     }
 
     return (
